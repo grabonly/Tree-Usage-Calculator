@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Usage Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+</head>
+
+<body>
+    <div class="container my-4">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand text-success" href="#">
+                    <i class="fa fa-leaf"></i> <strong>Tree Usage Calculator</strong>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills mb-4" id="tabs">
+            <li class="nav-item">
+                <button class="nav-link active" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator"
+                    type="button">Calculator</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="methodology-tab" data-bs-toggle="tab" data-bs-target="#methodology"
+                    type="button">Methodology</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Calculator Tab -->
+            <div class="tab-pane fade show active" id="calculator">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <div class="mb-3">
+                            <label for="paperSize" class="form-label">Paper Size</label>
+                            <select id="paperSize" class="form-select">
+                                <option value="Letter">Letter (8.5 x 11 inches)</option>
+                                <option value="A4">A4 (8.3 x 11.7 inches)</option>
+                                <option value="A3">A3 (11.7 x 16.5 inches)</option>
+                                <option value="Legal">Legal (8.5 x 14 inches)</option>
+                                <option value="Tabloid">Tabloid (11 x 17 inches)</option>
+                                <option value="B5">B5 (6.9 x 9.8 inches)</option>
+                                <option value="A5">A5 (5.8 x 8.3 inches)</option>
+                                <option value="Executive">Executive (7.25 x 10.5 inches)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pageCount" class="form-label">Pages</label>
+                            <input id="pageCount" type="number" class="form-control" min="1" value="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input id="quantity" type="number" class="form-control" min="1" value="1">
+                        </div>
+                        <button id="calculateBtn" class="btn btn-success">Calculate</button>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h3 id="resultPapers"></h3>
+                    <h3 id="resultTrees"></h3>
+                    <div id="treeIcons" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- Methodology Tab -->
+            <div class="tab-pane fade" id="methodology">
+                <div class="card">
+                    <div class="card-body">
+                        <h2>Methodology</h2>
+                        <ul class="list-group">
+                            <li class="list-group-item">1 tree produces 8,333.33 US letter 'copier' paper (based on
+                                [1]).</li>
+                            <li class="list-group-item">To calculate papers of type X, multiply 8,333.33 by (area of X /
+                                area of Letter).</li>
+                            <li class="list-group-item">Trees required = Total pages / Papers produced by one tree.</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <h2>References</h2>
+                        <p>http://conservatree.org/learn/EnviroIssues/TreeStats.shtml</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="script.js"></script> -->
+</body>
+
+</html>
+
+<style>
+    body {
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.fa-tree {
+    color: green;
+    margin: 5px;
+}
+
+.card-footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.card-footer a:hover {
+    text-decoration: underline;
+}
+</style>
+
+<script>
+    // Constants for paper production
+const PAPER_PRODUCTION = 8333.33; // Number of Letter-sized papers from 1 tree
+const PAPER_FACTORS = {
+    Letter: 1,
+    A4: 0.97,
+    A3: 1.94,
+    Legal: 1.27,
+    Tabloid: 2.25,
+    B5: 0.58,
+    A5: 0.48,
+    Executive: 0.72
+};
+
+// Get DOM elements
+const paperSizeSelect = document.getElementById('paperSize');
+const pageCountInput = document.getElementById('pageCount');
+const quantityInput = document.getElementById('quantity');
+const calculateBtn = document.getElementById('calculateBtn');
+const resultPapers = document.getElementById('resultPapers');
+const resultTrees = document.getElementById('resultTrees');
+const treeIcons = document.getElementById('treeIcons');
+
+// Calculate results
+calculateBtn.addEventListener('click', () => {
+    const paperSize = paperSizeSelect.value;
+    const pageCount = parseInt(pageCountInput.value);
+    const quantity = parseInt(quantityInput.value);
+
+    if (pageCount <= 0 || quantity <= 0) {
+        alert("Please enter valid positive numbers for pages and quantity.");
+        return;
+    }
+
+    const paperFactor = PAPER_FACTORS[paperSize];
+    const papersPerTree = PAPER_PRODUCTION * paperFactor;
+    const totalPapers = pageCount * quantity;
+    const treesNeeded = totalPapers / papersPerTree;
+
+    // Display results
+    resultPapers.textContent = `A single tree can produce ${papersPerTree.toFixed(2)} ${paperSize}-sized papers.`;
+    resultTrees.textContent = `You would need ${treesNeeded.toFixed(2)} trees to produce ${totalPapers} pages.`;
+
+    // Display tree icons
+    treeIcons.innerHTML = '';
+    const treeCount = Math.floor(treesNeeded);
+    for (let i = 0; i < treeCount; i++) {
+        const treeIcon = document.createElement('i');
+        treeIcon.className = 'fa fa-tree fa-2x';
+        treeIcons.appendChild(treeIcon);
+    }
+});
+</script>
